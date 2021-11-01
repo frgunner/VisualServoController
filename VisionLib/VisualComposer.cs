@@ -25,7 +25,7 @@ namespace VisionLib
         {
             _channel = new();
             _estimator = new();
-            _cap = new(0);
+            _cap = new(1);
             _recorder = rec ? new(_cap.FrameSize) : null;
             _connector = _cap.GetStream()
                 .Subscribe(async frame =>

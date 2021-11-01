@@ -29,25 +29,22 @@ namespace VisionLib
 
         // ------ Constructors ------ //
 
-        public ImageStream(int deviceId, int width = 1280, int height = 960)
+        public ImageStream(int deviceId)
         {
             _cap = new(deviceId);
-            _cap.Set(VideoCaptureProperties.FrameWidth, width);
-            _cap.Set(VideoCaptureProperties.FrameHeight, height);
+            _cap.Set(VideoCaptureProperties.FrameWidth, 1280);
+            _cap.Set(VideoCaptureProperties.FrameHeight, 960);
+            _cap.Set(VideoCaptureProperties.Fps, 30);
             Fps = _cap.Fps;
             FrameCount = -1;
-            FrameSize = new(width, height);
             _isFileSource = false;
         }
 
-        public ImageStream(string sourceFile, int width = 1280, int height = 960)
+        public ImageStream(string sourceFile)
         {
             _cap = new(sourceFile);
-            _cap.Set(VideoCaptureProperties.FrameWidth, width);
-            _cap.Set(VideoCaptureProperties.FrameHeight, height);
             Fps = _cap.Fps;
             FrameCount = _cap.FrameCount;
-            FrameSize = new(width, height);
             _isFileSource = true;
         }
 
@@ -88,9 +85,10 @@ namespace VisionLib
                     {
                         lock (_lockObj)
                         {
-                            try
-                            {
+                            try 
+                            { 
                                 _cap?.Read(frame);
+                                Cv2.Flip(frame, frame, FlipMode.XY);
                             }
                             catch { }
                         }

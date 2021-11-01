@@ -12,7 +12,7 @@ namespace ConsoleApp
         {
 
             var errors = new Errors(double.NaN, double.NaN);
-            var composer = new VisualComposer(true, true);
+            var composer = new VisualComposer(true, false);
             Console.WriteLine("Wait for client ...");
             var server = new TcpSocketServer(5001);
             var stream = server.GetStream();
