@@ -32,11 +32,12 @@ namespace VisionLib
         public ImageStream(int deviceId)
         {
             _cap = new(deviceId);
-            _cap.Set(VideoCaptureProperties.FrameWidth, 1280);
-            _cap.Set(VideoCaptureProperties.FrameHeight, 960);
+            _cap.Set(VideoCaptureProperties.FrameWidth, 640);
+            _cap.Set(VideoCaptureProperties.FrameHeight, 480);
             _cap.Set(VideoCaptureProperties.Fps, 30);
             Fps = _cap.Fps;
             FrameCount = -1;
+            FrameSize = new(_cap.FrameWidth, _cap.FrameHeight);
             _isFileSource = false;
         }
 

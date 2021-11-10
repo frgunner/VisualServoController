@@ -14,7 +14,7 @@ namespace VisionLib
 
         // ------ Fields ------ //
 
-        private readonly Size _size = new(1280, 960);
+        private readonly Size _size = new(640, 480);
         private readonly IntrinsicCameraParameters _paramIn;
         private readonly ExtrinsicCameraParameters _paramEx;
         private readonly PerspectiveTransformer _transformer;
@@ -28,7 +28,7 @@ namespace VisionLib
         // 見る範囲を制限したければここで
         // 射影変換後の座標系XY(mm)です
         private const int _maxWidth = 3000;
-        private const int _maxDistance = 8000;
+        private const int _maxDistance = 9000;
         private const int _focusWidth = 2000;
 
 
@@ -38,18 +38,22 @@ namespace VisionLib
         {
             // カメラキャリブレーションファイル置き場
             _paramIn = IntrinsicCameraParameters.Load("..\\..\\..\\..\\calib\\intrinsic.json");
-            _paramEx = ExtrinsicCameraParameters.Load("..\\..\\..\\..\\calib\\dummy-extrinsic.json");
+            _paramEx = ExtrinsicCameraParameters.Load("..\\..\\..\\..\\calib\\extrinsic.json");
             _transformer = new(_paramIn.CameraMatrix, _paramEx);
 
             // YOLOのモデル置き場
             var cfg = "..\\..\\..\\..\\model\\_.cfg";
             var weights = "..\\..\\..\\..\\model\\_.weights";
             var names = "..\\..\\..\\..\\model\\_.names";
-            _detector = new(cfg, weights, names, _size, 0.25f);
+            _detector = new(cfg, weights, names, _size, 0.05f);
 
             _radar = new(_maxWidth, _maxDistance, _focusWidth);
             //ハフ変換設定
-             _hough = new HoughSingleLine(-20 * Math.PI / 180, 20 * Math.PI / 180, -3000, 3000, -3000, 3000, 0, 10000, 0.25 * Math.PI / 180, 50, 50, 50);
+             _hough = new HoughSingleLine(
+                 -20 * Math.PI / 180, 20 * Math.PI / 180, -1000, 1000, 
+                 -1000, 1000, 0, 9000, 
+                 0.25 * Math.PI / 180, 50, 50, 50
+             );
         }
         
 
@@ -96,13 +100,13 @@ namespace VisionLib
            
             var line = _hough.Run(points.ToPointArray()).ToLine2D();
 
-            var lateralerror = line.GetX(0);
-            var houghteata = Math.Atan2(line.Slope, 1);
+            var lateralerror = line.DistanceTo(new(0, 0));
+            var houghTheta = Math.Atan2(line.Slope, 1);
             var headingerror = 0.0;
-            if (houghteata >= 0)
-                headingerror = Math.PI / 2 -houghteata;
+            if (houghTheta >= 0)
+                headingerror = Math.PI / 2 -houghTheta;
             else
-                headingerror = -Math.PI / 2 - houghteata;
+                headingerror = -Math.PI / 2 - houghTheta;
 
             if (headingerror > Math.PI * 15 / 180 || headingerror < -Math.PI * 15 / 180)
                 return new Errors(double.NaN, double.NaN);

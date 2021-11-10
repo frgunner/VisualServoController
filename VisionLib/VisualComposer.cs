@@ -16,7 +16,7 @@ namespace VisionLib
         private readonly VideoRecorder _recorder;
         private readonly Channel<Errors> _channel;
         private readonly Size _viewFrameSize = new(640, 480);
-        private readonly Size _viewRadarSize = new(512, 512);
+        private readonly Size _viewRadarSize = new(300, 450);
 
 
         // ------ Constructors ------ //
