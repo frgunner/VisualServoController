@@ -45,14 +45,14 @@ namespace VisionLib
             var cfg = "..\\..\\..\\..\\model\\_.cfg";
             var weights = "..\\..\\..\\..\\model\\_.weights";
             var names = "..\\..\\..\\..\\model\\_.names";
-            _detector = new(cfg, weights, names, _size, 0.05f);
+            _detector = new(cfg, weights, names, new(1280, 960), 0.05f);
 
             _radar = new(_maxWidth, _maxDistance, _focusWidth);
             //ハフ変換設定
              _hough = new HoughSingleLine(
                  -20 * Math.PI / 180, 20 * Math.PI / 180, -1000, 1000, 
                  -1000, 1000, 0, 9000, 
-                 0.25 * Math.PI / 180, 50, 50, 50
+                 0.25 * Math.PI / 180, 10, 10, 50
              );
         }
         
@@ -101,6 +101,7 @@ namespace VisionLib
             var line = _hough.Run(points.ToPointArray()).ToLine2D();
 
             var lateralerror = line.DistanceTo(new(0, 0));
+            if (line.GetX(0) > 0) lateralerror *= -1;
             var houghTheta = Math.Atan2(line.Slope, 1);
             var headingerror = 0.0;
             if (houghTheta >= 0)
@@ -118,7 +119,7 @@ namespace VisionLib
             _p1 = new Point(x1, y1);
             _p2 = new Point(x2, y2);
             
-            var errors = new Errors(lateralerror, headingerror);
+            var errors = new Errors(lateralerror, headingerror * 180 / Math.PI);
             return errors;
         }
 

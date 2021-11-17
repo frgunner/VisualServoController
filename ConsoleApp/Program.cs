@@ -24,8 +24,8 @@ namespace ConsoleApp
                     if (stream.ReadString() is "") break;
                     errors = await composer.GetCurrentErrors();
                     var lateral = errors.LateralError / 1000.0;
-                    stream.WriteString($"{-lateral},{-errors.HeadingError}");
-                    Console.WriteLine($"LateralE = {-lateral:f2}  : HeadingE = {-errors.HeadingError:f2}");
+                    stream.WriteString($"{lateral},{-errors.HeadingError}");
+                    Console.WriteLine($"LateralE = {lateral:f2}  : HeadingE = {-errors.HeadingError:f2}");
                 }
             });
 
